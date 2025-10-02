@@ -1,4 +1,4 @@
-module github.com/eli-front/kalshi
+module github.com/eli-front/kalshi-go
 
 go 1.25.1
 

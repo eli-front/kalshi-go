@@ -1,4 +1,4 @@
-package client 
+package kalshi
 
 import (
 	"bytes"
@@ -30,8 +30,8 @@ const (
 )
 
 type KalshiBaseClient struct {
-	keyID      string
-	privateKey *rsa.PrivateKey
+	keyID       string
+	privateKey  *rsa.PrivateKey
 	environment Environment
 
 	HTTPBaseURL string
@@ -105,9 +105,9 @@ func (c *KalshiBaseClient) rateLimit() {
 
 type KalshiHTTPClient struct {
 	*KalshiBaseClient
-	httpClient   *http.Client
-	exchangePath string
-	marketsPath  string
+	httpClient    *http.Client
+	exchangePath  string
+	marketsPath   string
 	portfolioPath string
 }
 
@@ -236,9 +236,9 @@ func (c *KalshiHTTPClient) GetTrades(ctx context.Context, ticker *string, limit 
 
 type KalshiWebSocketClient struct {
 	*KalshiBaseClient
-	conn       *websocket.Conn
-	urlSuffix  string
-	messageID  int64
+	conn      *websocket.Conn
+	urlSuffix string
+	messageID int64
 }
 
 func NewKalshiWebSocketClient(keyID string, priv *rsa.PrivateKey, env Environment) (*KalshiWebSocketClient, error) {
@@ -363,4 +363,3 @@ func ParseRSAPrivateKeyFromPEM(pemBytes []byte) (*rsa.PrivateKey, error) {
 		return nil, fmt.Errorf("unsupported key type %q", block.Type)
 	}
 }
-

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -9,22 +10,23 @@ import (
 	"github.com/joho/godotenv"
 
 	// use the package name client
-	"github.com/eli-front/kalshi/client"
+	"github.com/eli-front/kalshi-go"
 )
 
-const IsDemoMode = true
-
 func main() {
-	// load .env
-	envFileName := ".demo.env"
-	clientEnv := client.EnvironmentDemo
+	// Parse command line flags
+	envFile := flag.String("env", ".env", "Path to environment file")
+	flag.Parse()
 
-	if !IsDemoMode {
-		envFileName = ".prod.env"
-		clientEnv = client.EnvironmentProd
-	}
-	if err := godotenv.Load(envFileName); err != nil {
+	// Load environment file
+	if err := godotenv.Load(*envFile); err != nil {
 		log.Fatal("error loading .env file:", err)
+	}
+
+	// choose environment based on DEMO env var
+	clientEnv := kalshi.EnvironmentProd
+	if os.Getenv("DEMO") == "true" {
+		clientEnv = kalshi.EnvironmentDemo
 	}
 
 	apiID := os.Getenv("KALSHI_API_ID")
@@ -34,13 +36,13 @@ func main() {
 	}
 
 	// parse RSA private key
-	priv, err := client.ParseRSAPrivateKeyFromPEM([]byte(privateKeyPEM))
+	priv, err := kalshi.ParseRSAPrivateKeyFromPEM([]byte(privateKeyPEM))
 	if err != nil {
 		log.Fatal("failed to parse private key:", err)
 	}
 
 	// build HTTP client, use demo or prod
-	httpClient, err := client.NewKalshiHTTPClient(apiID, priv, clientEnv)
+	httpClient, err := kalshi.NewKalshiHTTPClient(apiID, priv, clientEnv)
 	if err != nil {
 		log.Fatal("failed to create client:", err)
 	}
